@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCL-90 心理健康自评量表</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#faf8f5; --white:#ffffff; --ink:#1a1714; --ink-light:#4a4540;
+  --ink-faint:#8a8480; --accent:#b5836a; --accent-light:#d4a892;
+  --accent-pale:#f5ede8; --sage:#7a9b8a; --sage-pale:#eaf2ee;
+  --border:#e8e2dc; --shadow:rgba(26,23,20,.07); --r:16px; --rsm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  background:var(--cream);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+.page{display:none;}
+.page.active{display:block;animation:fadeUp .38s ease both;}
+.fpage{display:none;flex-direction:column;align-items:center;justify-content:center;}
+.fpage.active{display:flex;animation:fadeUp .38s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.btn{width:100%;padding:15px;border:none;border-radius:100px;
+  font-family:'Noto Sans SC',sans-serif;font-size:15px;font-weight:500;
+  letter-spacing:1.5px;cursor:pointer;transition:all .22s ease;}
+.btn-dk{background:var(--ink);color:#fff;}
+.btn-dk:hover{background:#2a2520;transform:translateY(-1px);}
+.btn-dk:active{transform:translateY(0);}
+.btn-ol{background:transparent;color:var(--ink);border:1.5px solid var(--border);}
+.btn-ol:hover{border-color:var(--ink);}
+
+/* ─── COVER ─── */
+#pg-cover{min-height:100vh;padding:48px 28px;background:var(--white);position:relative;overflow:hidden;}
+#pg-cover::before{content:'';position:absolute;top:-100px;right:-80px;width:320px;height:320px;
+  border-radius:50%;background:radial-gradient(circle,#f5ede8,transparent 70%);pointer-events:none;}
+#pg-cover::after{content:'';position:absolute;bottom:-80px;left:-60px;width:260px;height:260px;
+  border-radius:50%;background:radial-gradient(circle,#eaf2ee,transparent 70%);pointer-events:none;}
+.cv-tag{font-size:11px;font-weight:500;letter-spacing:3px;color:var(--accent);
+  background:var(--accent-pale);padding:6px 16px;border-radius:100px;margin-bottom:28px;text-transform:uppercase;}
+.cv-title{font-family:'Noto Serif SC',serif;font-size:34px;font-weight:600;color:var(--ink);
+  text-align:center;line-height:1.25;letter-spacing:3px;margin-bottom:10px;}
+.cv-en{font-size:12px;color:var(--ink-faint);letter-spacing:2px;text-align:center;margin-bottom:36px;}
+.cv-rule{width:48px;height:1px;background:linear-gradient(90deg,transparent,var(--accent-light),transparent);margin:0 auto 36px;}
+.cv-feats{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px;margin-bottom:36px;}
+.feat{display:flex;align-items:center;gap:14px;background:var(--cream);border-radius:12px;padding:14px 18px;}
+.fi{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.fi-r{background:var(--accent-pale);} .fi-s{background:var(--sage-pale);} .fi-g{background:#fef9ea;}
+.ft{font-size:13px;color:var(--ink-light);line-height:1.5;}
+.ft b{display:block;font-size:14px;color:var(--ink);font-weight:500;margin-bottom:2px;}
+.cv-warn{background:#fff8f0;border:1px solid #f5d9c4;border-radius:var(--rsm);
+  padding:13px 18px;font-size:12px;color:#a06040;line-height:1.7;
+  text-align:center;width:100%;max-width:360px;margin-bottom:28px;}
+.cv-cta{width:100%;max-width:360px;}
+.cv-foot{margin-top:20px;font-size:11px;color:var(--ink-faint);text-align:center;line-height:1.9;}
+
+/* ─── INSTRUCTIONS ─── */
+#pg-inst{min-height:100vh;padding:48px 28px 40px;background:var(--white);}
+.inst-step{font-size:11px;letter-spacing:2.5px;color:var(--accent);font-weight:500;margin-bottom:8px;}
+.inst-title{font-family:'Noto Serif SC',serif;font-size:24px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:28px;}
+.ibox{background:var(--cream);border-radius:var(--r);padding:22px;margin-bottom:16px;}
+.ibox h3{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:12px;}
+.ibox p,.ibox li{font-size:13px;color:var(--ink-light);line-height:1.85;}
+.ibox ul{padding-left:16px;}
+.sdemo{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;}
+.sdi{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.sdc{width:44px;height:44px;border-radius:50%;border:2px solid var(--border);background:var(--white);
+  display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--ink-faint);}
+.sdc.sel{border-color:var(--accent);background:var(--accent-pale);color:var(--accent);}
+.sdl{font-size:11px;color:var(--ink-faint);text-align:center;line-height:1.4;}
+
+/* ─── TEST ─── */
+#pg-test{min-height:100vh;background:var(--cream);}
+.t-hd{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;}
+.t-hd-r{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
+.t-hd-tit{font-family:'Noto Serif SC',serif;font-size:15px;font-weight:600;color:var(--ink);}
+.t-cnt{font-size:13px;color:var(--ink-faint);}
+.t-cnt em{font-style:normal;font-weight:700;color:var(--accent);font-size:18px;}
+.pw{height:4px;background:var(--border);border-radius:100px;overflow:hidden;}
+.pf{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--accent-light),var(--accent));transition:width .35s ease;width:0%;}
+.q-stage{padding:36px 28px 140px;display:flex;flex-direction:column;align-items:center;}
+.q-card{width:100%;max-width:480px;background:var(--white);border-radius:20px;
+  padding:28px 24px 24px;box-shadow:0 4px 24px var(--shadow);animation:cardIn .3s ease both;}
+@keyframes cardIn{from{opacity:0;transform:scale(.97) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.q-num-badge{display:inline-block;font-size:11px;letter-spacing:2px;font-weight:500;
+  color:var(--accent);background:var(--accent-pale);padding:4px 12px;border-radius:100px;margin-bottom:16px;}
+.q-text{font-size:19px;color:var(--ink);line-height:1.55;font-weight:400;margin-bottom:28px;min-height:52px;}
+.sopts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.sopt{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;user-select:none;}
+.sopt input{display:none;}
+.soc{width:52px;height:52px;border-radius:50%;border:2px solid var(--border);background:var(--white);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;
+  color:var(--ink-faint);transition:all .15s ease;}
+.sopt input:checked+.soc{border-color:var(--accent);background:var(--accent);color:#fff;
+  transform:scale(1.1);box-shadow:0 6px 18px rgba(181,131,106,.38);}
+.sol{font-size:11px;color:var(--ink-faint);text-align:center;line-height:1.3;}
+.q-nav{display:flex;gap:12px;margin-top:20px;width:100%;max-width:480px;}
+.q-nav .btn{flex:1;padding:14px;font-size:14px;}
+.q-hint{margin-top:16px;font-size:12px;color:var(--ink-faint);text-align:center;}
+
+/* ─── RESULT ─── */
+#pg-result{min-height:100vh;background:var(--cream);}
+.rh{background:var(--white);padding:40px 28px 32px;text-align:center;position:relative;overflow:hidden;}
+.rh::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);
+  width:420px;height:320px;background:radial-gradient(ellipse,#f5ede8,transparent 65%);pointer-events:none;}
+.r-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:2px;color:var(--accent);font-weight:500;margin-bottom:20px;}
+.sring{width:148px;height:148px;margin:0 auto 18px;position:relative;}
+.sring svg{width:100%;height:100%;transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:9;}
+.ring-fill{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;
+  stroke-dasharray:327;stroke-dashoffset:327;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1);}
+.sc-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.sc-num{font-family:'Noto Serif SC',serif;font-size:38px;font-weight:600;color:var(--ink);line-height:1;}
+.sc-lbl{font-size:11px;color:var(--ink-faint);letter-spacing:1px;margin-top:4px;}
+.rlvl{display:inline-block;padding:8px 22px;border-radius:100px;font-size:15px;font-weight:500;letter-spacing:1px;margin-bottom:14px;}
+.la{background:var(--sage-pale);color:#3a6a4a;} .lb{background:#fef9ea;color:#7a5a10;}
+.lc{background:#fff0ea;color:#903a10;} .ld{background:#ffeaea;color:#881010;}
+.rig{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px auto 0;max-width:360px;}
+.rigi{background:var(--cream);border-radius:12px;padding:12px 8px;text-align:center;}
+.riv{font-size:20px;font-weight:700;color:var(--ink);font-family:'Noto Serif SC',serif;}
+.rik{font-size:10px;color:var(--ink-faint);margin-top:3px;line-height:1.4;}
+.rb{padding:24px 24px 60px;}
+.sh{font-family:'Noto Serif SC',serif;font-size:19px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+.ss{font-size:12px;color:var(--ink-faint);margin-bottom:18px;line-height:1.6;}
+.acard{background:var(--white);border-radius:var(--r);padding:22px;box-shadow:0 2px 10px var(--shadow);margin-bottom:14px;}
+.ac-h{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:14px;}
+.ac-t{font-size:13px;color:var(--ink-light);line-height:1.9;}
+/* score overview */
+.sov{background:var(--white);border-radius:var(--r);padding:20px 20px 14px;box-shadow:0 2px 10px var(--shadow);margin-bottom:20px;}
+.sovr{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.sovn{font-size:13px;color:var(--ink);font-weight:500;width:90px;flex-shrink:0;}
+.sovbw{flex:1;height:8px;background:var(--border);border-radius:100px;overflow:hidden;}
+.sovb{height:100%;border-radius:100px;transition:width 1s ease;width:0%;}
+.sovs{font-size:13px;font-weight:600;color:var(--ink);width:32px;text-align:right;flex-shrink:0;}
+.sovlv{font-size:10px;font-weight:500;padding:2px 8px;border-radius:100px;flex-shrink:0;width:32px;text-align:center;}
+.bn{background:linear-gradient(90deg,#74b894,#4a9a72);}
+.bm{background:linear-gradient(90deg,#e8c060,#c89830);}
+.bmo{background:linear-gradient(90deg,#e89050,#c86020);}
+.bs{background:linear-gradient(90deg,#e05050,#b02020);}
+.lvn{background:var(--sage-pale);color:#3a6a4a;}
+.lvm{background:#fef9ea;color:#7a5a10;}
+.lvmo{background:#fff0ea;color:#903a10;}
+.lvs{background:#ffeaea;color:#881010;}
+/* dim cards */
+.dcard{background:var(--white);border-radius:var(--r);box-shadow:0 2px 10px var(--shadow);margin-bottom:14px;overflow:hidden;}
+.dch{padding:18px 20px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.dchl{display:flex;flex-direction:column;gap:8px;}
+.dchn{font-size:15px;font-weight:600;color:var(--ink);}
+.dchm{display:flex;align-items:center;gap:8px;}
+.dcha{font-size:22px;font-weight:700;color:var(--accent);font-family:'Noto Serif SC',serif;}
+.dcho{font-size:12px;color:var(--ink-faint);align-self:flex-end;padding-bottom:2px;}
+.dchb{font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px;}
+.dcarr{font-size:16px;color:var(--ink-faint);transition:transform .25s;}
+.dch.open .dcarr{transform:rotate(180deg);}
+.dcb{display:none;padding:0 20px 20px;}
+.dcb.open{display:block;animation:fadeUp .25s ease both;}
+.dcbw{height:6px;background:var(--border);border-radius:100px;margin-bottom:16px;overflow:hidden;}
+.dcbb{height:100%;border-radius:100px;transition:width 1s ease;width:0%;}
+.dtt{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px;}
+.dtd{font-size:13px;color:var(--ink-light);line-height:1.85;margin-bottom:14px;}
+.dti{font-size:13px;color:var(--ink-light);line-height:1.85;}
+.dti strong{color:var(--ink);}
+/* suggest */
+.sgcard{border-radius:var(--r);padding:22px;margin-bottom:16px;}
+.sga{background:#eaf2ee;} .sgb{background:#fef9ea;} .sgc{background:#fff0ea;} .sgd{background:#ffeaea;}
+.sgh{font-size:15px;font-weight:600;margin-bottom:12px;}
+.sga .sgh{color:#3a6a4a;} .sgb .sgh{color:#7a5a10;} .sgc .sgh{color:#903a10;} .sgd .sgh{color:#881010;}
+.sgis{display:flex;flex-direction:column;gap:10px;}
+.sgit{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink-light);line-height:1.75;}
+.sgdot{width:6px;height:6px;border-radius:50%;margin-top:7px;flex-shrink:0;}
+.sga .sgdot{background:#4a9a72;} .sgb .sgdot{background:#c89830;} .sgc .sgdot{background:#c86020;} .sgd .sgdot{background:#b02020;}
+.disc{background:var(--cream);border-radius:var(--rsm);padding:16px 20px;font-size:11px;color:var(--ink-faint);line-height:1.8;text-align:center;margin-top:8px;}
+
+/* token error */
+#pg-err{min-height:100vh;padding:40px 28px;background:var(--white);}
+.err-ic{font-size:56px;margin-bottom:20px;text-align:center;}
+.err-tt{font-family:'Noto Serif SC',serif;font-size:22px;font-weight:600;margin-bottom:10px;text-align:center;}
+.err-tx{font-size:14px;color:var(--ink-faint);line-height:1.7;max-width:300px;text-align:center;margin:0 auto;}
+
+/* ─── RESPONSIVE (desktop) ─── */
+@media (min-width: 600px) {
+  #pg-cover { padding: 60px 40px; }
+  .cv-feats { max-width: 420px; }
+  .cv-cta { max-width: 420px; }
+  #pg-inst > div { max-width: 560px; }
+  .q-stage { padding: 48px 40px 160px; }
+  .q-card { padding: 36px 32px 32px; }
+  .q-text { font-size: 22px; }
+  .soc { width: 60px; height: 60px; font-size: 21px; }
+  .sopts { gap: 14px; }
+  .rb { padding: 32px 40px 80px; max-width: 700px; margin: 0 auto; }
+  .rh { padding: 48px 40px 36px; }
+  .rig { max-width: 440px; }
+  .sov, .acard, .dcard, .sgcard { max-width: 700px; margin-left: auto; margin-right: auto; margin-bottom: 14px; }
+  .sov { margin-bottom: 20px; }
+}
+@media (min-width: 900px) {
+  .cv-title { font-size: 40px; }
+  .q-text { font-size: 24px; }
+  .q-card { max-width: 560px; }
+  .q-nav { max-width: 560px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ERROR -->
+<div id="pg-err" class="fpage">
+  <div class="err-ic">🔒</div>
+  <div class="err-tt">链接无效</div>
+  <div class="err-tx">该测试链接无效或已过期，请联系商家获取有效链接。</div>
+</div>
+
+<!-- COVER -->
+<div id="pg-cover" class="fpage active">
+  <div class="cv-tag">专业心理测评</div>
+  <h1 class="cv-title">SCL-90<br>心理健康自评量表</h1>
+  <p class="cv-en">Symptom Checklist · 90</p>
+  <div class="cv-rule"></div>
+  <div class="cv-feats">
+    <div class="feat"><div class="fi fi-r">📋</div><div class="ft"><b>90道标准题目</b>涵盖9大心理健康维度，符合国际标准</div></div>
+    <div class="feat"><div class="fi fi-s">📊</div><div class="ft"><b>深度分析报告</b>完成后即时生成专业解读与建议</div></div>
+    <div class="feat"><div class="fi fi-g">⏱️</div><div class="ft"><b>约15–20分钟</b>逐题作答，男女通用，匿名测试</div></div>
+  </div>
+  <div class="cv-warn">⚠️ 本测试仅供个人参考，结果不构成临床诊断。<br>如有严重心理困扰，请及时前往专业机构就诊。</div>
+  <div class="cv-cta"><button class="btn btn-dk" onclick="go('pg-inst')">开始测试</button></div>
+  <div class="cv-foot">依据国际标准 SCL-90 量表编制<br>结果数据仅在本设备本地运算，不上传至任何服务器</div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div id="pg-inst" class="page">
+  <div style="max-width:520px;margin:0 auto;padding:48px 28px 40px;">
+    <div class="inst-step">STEP 1 · 作答须知</div>
+    <h2 class="inst-title">开始前，<br>请仔细阅读说明</h2>
+    <div class="ibox">
+      <h3>📌 作答原则</h3>
+      <p>以下90道题描述了人们可能出现的一些感受与状态。请根据<strong>最近一周（含今天）</strong>您的实际情况，为每道题选择最符合的选项。不存在对错之分，请依照真实感受作答。</p>
+    </div>
+    <div class="ibox">
+      <h3>🔢 量表说明</h3>
+      <p style="margin-bottom:10px">每道题有5个选项，代表症状出现的频率与程度：</p>
+      <div class="sdemo">
+        <div class="sdi"><div class="sdc">1</div><div class="sdl">从无<br>没有</div></div>
+        <div class="sdi"><div class="sdc">2</div><div class="sdl">很轻<br>偶尔</div></div>
+        <div class="sdi"><div class="sdc sel">3</div><div class="sdl">中等<br>有时</div></div>
+        <div class="sdi"><div class="sdc">4</div><div class="sdl">偏重<br>经常</div></div>
+        <div class="sdi"><div class="sdc">5</div><div class="sdl">严重<br>总是</div></div>
+      </div>
+    </div>
+    <div class="ibox">
+      <h3>📝 注意事项</h3>
+      <ul>
+        <li>请根据<strong>最近一周</strong>的感受作答，不要考虑过去或未来</li>
+        <li>每道题点击选项后会<strong>自动跳至下一题</strong>，无需额外点击</li>
+        <li>可随时点击"← 上一题"返回修改答案</li>
+        <li>请独立完成，如实作答，无需揣摩"正确答案"</li>
+      </ul>
+    </div>
+    <button class="btn btn-dk" onclick="startTest()" style="margin-top:24px">我已了解，开始作答</button>
+  </div>
+</div>
+
+<!-- TEST -->
+<div id="pg-test" class="page">
+  <div class="t-hd">
+    <div class="t-hd-r">
+      <div class="t-hd-tit">SCL-90 量表</div>
+      <div class="t-cnt"><em id="cur-num">1</em><span style="color:var(--ink-faint);font-size:13px"> / 90</span></div>
+    </div>
+    <div class="pw"><div class="pf" id="prog-fill"></div></div>
+  </div>
+  <div class="q-stage">
+    <div class="q-card" id="q-card">
+      <div class="q-num-badge" id="q-nbadge">第 1 题</div>
+      <div class="q-text" id="q-text">加载中...</div>
+      <div class="sopts" id="sopts"></div>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-ol" id="btn-prev" onclick="prevQ()" style="display:none">← 上一题</button>
+      <button class="btn btn-dk" id="btn-sub" onclick="submitTest()" style="display:none">查看我的报告 →</button>
+    </div>
+    <div class="q-hint" id="q-hint">点击选项后自动跳至下一题</div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="pg-result" class="page">
+  <div class="rh">
+    <div class="r-tag">✦ 测评报告</div>
+    <div class="sring">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <circle class="ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"/>
+      </svg>
+      <div class="sc-center">
+        <div class="sc-num" id="r-total">—</div>
+        <div class="sc-lbl">总分</div>
+      </div>
+    </div>
+    <div class="rlvl" id="r-lvl">—</div>
+    <div class="rig">
+      <div class="rigi"><div class="riv" id="r-gsi">—</div><div class="rik">总均分<br>(GSI)</div></div>
+      <div class="rigi"><div class="riv" id="r-pst">—</div><div class="rik">阳性症状<br>项目数(PST)</div></div>
+      <div class="rigi"><div class="riv" id="r-psdi">—</div><div class="rik">阳性症状<br>均分(PSDI)</div></div>
+    </div>
+  </div>
+
+  <div class="rb">
+    <!-- 1 总体 -->
+    <div style="margin-bottom:24px">
+      <div class="sh">总体评估</div>
+      <div class="ss">基于您90道题的作答，综合计算三项核心评估指标</div>
+      <div class="acard"><div class="ac-h">📊 核心指标解读</div><div class="ac-t" id="r-core"></div></div>
+      <div class="acard"><div class="ac-h">🔎 整体状态分析</div><div class="ac-t" id="r-overall"></div></div>
+    </div>
+    <!-- 2 概览 -->
+    <div style="margin-bottom:24px">
+      <div class="sh">九大维度得分</div>
+      <div class="ss">SCL-90 将症状归纳为9个因子，每项均分1–5分，均分越高说明该维度困扰越明显</div>
+      <div class="sov" id="sov"></div>
+    </div>
+    <!-- 3 详细 -->
+    <div style="margin-bottom:24px">
+      <div class="sh">维度详细分析</div>
+      <div class="ss">点击各维度展开，查看专业说明与个性化解读</div>
+      <div id="dcards"></div>
+    </div>
+    <!-- 4 综合 -->
+    <div style="margin-bottom:20px">
+      <div class="sh">综合心理分析</div>
+      <div class="ss">结合您各维度得分，以下为综合评估与重点关注方向</div>
+      <div class="acard"><div class="ac-h">💡 重点关注维度</div><div class="ac-t" id="r-focus"></div></div>
+      <div class="acard"><div class="ac-h">🌱 心理优势资源</div><div class="ac-t" id="r-strength"></div></div>
+    </div>
+    <!-- 5 建议 -->
+    <div style="margin-bottom:20px">
+      <div class="sh">专属调适建议</div>
+      <div class="ss">根据您本次测评结果，以下建议仅供参考</div>
+      <div class="sgcard" id="sgcard">
+        <div class="sgh" id="sg-h"></div>
+        <div class="sgis" id="sg-is"></div>
+      </div>
+    </div>
+    <div class="disc">
+      本报告基于 SCL-90 症状自评量表（Symptom Checklist 90）生成。该量表由 Derogatis LR 于1973年编制，
+      是目前国际通用的心理健康筛查工具之一，已在国内外精神科、心理科广泛应用。<br><br>
+      本报告<strong>仅供个人参考，不构成临床诊断</strong>。如您对结果有疑问，
+      或持续感受到明显心理困扰，建议前往正规医院心理科/精神科或专业心理咨询机构进行面诊评估。
+    </div>
+  </div>
+</div>
+
+<script>
+// ── TOKENS ──
+const VALID=new Set(['xhs2024a1b2c3d4','xhs2024e5f6g7h8','xhs2024i9j0k1l2','xhs2024m3n4o5p6',
+  'xhs2024q7r8s9t0','xhs2024u1v2w3x4','xhs2024y5z6a7b8','xhs2024c9d0e1f2','xhs2024g3h4i5j6',
+  'xhs2024k7l8m9n0','xhs2024o1p2q3r4','xhs2024s5t6u7v8','xhs2024w9x0y1z2','xhs2024ab3cd4ef',
+  'xhs2024gh5ij6kl','xhs2024mn7op8qr','xhs2024st9uv0wx','xhs2024yz1ab2cd','xhs2024ef3gh4ij',
+  'xhs2024kl5mn6op','debug']);
+
+function checkToken(){
+  const t=new URLSearchParams(location.search).get('t')||new URLSearchParams(location.search).get('token');
+  if(t&&!VALID.has(t)){go('pg-err');return false;}
+  return true;
+}
+
+// ── 90 QUESTIONS in original order ──
+const QS=[
+  {id:1,t:'头痛'},{id:2,t:'神经过敏，心中不踏实'},{id:3,t:'头脑中有不必要的想法或字句盘旋'},
+  {id:4,t:'头晕或晕倒'},{id:5,t:'对异性的兴趣减退'},{id:6,t:'对旁人责备求全'},
+  {id:7,t:'感到别人能控制您的思想'},{id:8,t:'责怪别人制造麻烦'},{id:9,t:'忘性大'},
+  {id:10,t:'担心自己的衣饰整齐及仪态的端正'},{id:11,t:'容易烦恼和激动'},{id:12,t:'胸痛'},
+  {id:13,t:'害怕空旷的场所或街道'},{id:14,t:'感到自己的精力下降，活动减慢'},{id:15,t:'想结束自己的生命'},
+  {id:16,t:'听到旁人听不到的声音'},{id:17,t:'发抖'},{id:18,t:'感到大多数人都不可信任'},
+  {id:19,t:'胃口差'},{id:20,t:'容易哭泣'},{id:21,t:'同异性相处时感到害羞不自在'},
+  {id:22,t:'感到受骗、中了圈套或有人想抓住您'},{id:23,t:'无缘无故地突然感到害怕'},{id:24,t:'自己不能控制地大发脾气'},
+  {id:25,t:'怕单独出门'},{id:26,t:'经常责怪自己'},{id:27,t:'腰痛'},
+  {id:28,t:'感到难以完成任务'},{id:29,t:'感到孤独'},{id:30,t:'感到苦闷'},
+  {id:31,t:'过分担忧'},{id:32,t:'对事物不感兴趣'},{id:33,t:'感到害怕'},
+  {id:34,t:'您的感情容易受到伤害'},{id:35,t:'旁人能知道您的私下想法'},{id:36,t:'感到别人不理解您、不同情您'},
+  {id:37,t:'感到人们对您不友好，不喜欢您'},{id:38,t:'做事必须做得很慢以保证做得正确'},{id:39,t:'心跳得很厉害'},
+  {id:40,t:'恶心或胃部不舒服'},{id:41,t:'感到比不上他人'},{id:42,t:'肌肉酸痛'},
+  {id:43,t:'感到有人在监视您、谈论您'},{id:44,t:'难以入睡'},{id:45,t:'做事必须反复检查'},
+  {id:46,t:'难以作出决定'},{id:47,t:'怕乘电车、公共汽车、地铁或火车'},{id:48,t:'呼吸有困难'},
+  {id:49,t:'一阵阵发冷或发热'},{id:50,t:'因为感到害怕而避开某些东西、场合或活动'},{id:51,t:'脑子变空了'},
+  {id:52,t:'身体发麻或刺痛'},{id:53,t:'喉咙有梗塞感'},{id:54,t:'感到没有前途没有希望'},
+  {id:55,t:'不能集中注意力'},{id:56,t:'感到身体的某一部分软弱无力'},{id:57,t:'感到紧张或容易紧张'},
+  {id:58,t:'感到手或脚发沉'},{id:59,t:'想到死亡的事'},{id:60,t:'吃得太多'},
+  {id:61,t:'当别人看着您或谈论您时感到不自在'},{id:62,t:'有一些不属于您自己的想法'},{id:63,t:'有想打人或伤害他人的冲动'},
+  {id:64,t:'醒得太早'},{id:65,t:'必须反复洗手、点数目或触摸某些东西'},{id:66,t:'睡得不稳不深'},
+  {id:67,t:'有想摔坏或破坏东西的冲动'},{id:68,t:'有一些别人没有的想法或念头'},{id:69,t:'感到对别人神经过敏'},
+  {id:70,t:'在商店或电影院等人多的地方感到不自在'},{id:71,t:'感到任何事情都很困难'},{id:72,t:'一阵阵恐惧或惊恐'},
+  {id:73,t:'感到在公共场合吃东西很不舒服'},{id:74,t:'经常与人争论'},{id:75,t:'单独一人时神经很紧张'},
+  {id:76,t:'别人对您的成绩没有作出恰当的评价'},{id:77,t:'即使和别人在一起也感到孤单'},{id:78,t:'感到坐立不安、心神不定'},
+  {id:79,t:'感到自己没有什么价值'},{id:80,t:'感到熟悉的东西变成陌生或不像是真的'},{id:81,t:'大叫或摔东西'},
+  {id:82,t:'害怕会在公共场所晕倒'},{id:83,t:'感到别人想占您的便宜'},{id:84,t:'为一些有关性的想法而很苦恼'},
+  {id:85,t:'您认为应该因为自己的过错而受到惩罚'},{id:86,t:'感到要赶快把事情做完'},{id:87,t:'感到自己的身体有严重问题'},
+  {id:88,t:'从未感到和其他人很亲近'},{id:89,t:'感到自己有罪'},{id:90,t:'感到自己的脑子有毛病'}
+];
+
+const DIMS=[
+  {key:'som',name:'躯体化',      qs:[1,4,12,27,40,42,48,49,52,53,56,58]},
+  {key:'ocd',name:'强迫症状',    qs:[3,9,10,28,38,45,46,51,55,65]},
+  {key:'int',name:'人际关系敏感',qs:[6,21,34,36,37,41,61,69,73]},
+  {key:'dep',name:'抑郁',        qs:[5,14,15,20,22,26,29,30,31,32,54,71,79]},
+  {key:'anx',name:'焦虑',        qs:[2,17,23,33,39,57,72,78,80,86]},
+  {key:'hos',name:'敌对',        qs:[11,24,63,67,74,81]},
+  {key:'pho',name:'恐怖',        qs:[13,25,47,50,70,75,82]},
+  {key:'par',name:'偏执',        qs:[8,18,43,68,76,83]},
+  {key:'psy',name:'精神病性',    qs:[7,16,35,62,77,84,85,87,88,90]}
+];
+
+const LBLS=['从无','很轻','中等','偏重','严重'];
+
+let cur=0, answers={};
+
+function go(id){
+  document.querySelectorAll('.page,.fpage').forEach(p=>{p.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startTest(){cur=0;go('pg-test');renderQ();}
+
+function renderQ(){
+  const q=QS[cur];
+  document.getElementById('cur-num').textContent=cur+1;
+  document.getElementById('prog-fill').style.width=((cur/90)*100)+'%';
+  document.getElementById('q-nbadge').textContent='第 '+q.id+' 题';
+  document.getElementById('q-text').textContent=q.t;
+
+  // 用 createElement 绑定事件，避免 innerHTML checked 触发 change
+  const wrap=document.getElementById('sopts');
+  wrap.innerHTML='';
+  [1,2,3,4,5].forEach(function(v,i){
+    const lbl=document.createElement('label');
+    lbl.className='sopt';
+
+    const inp=document.createElement('input');
+    inp.type='radio';
+    inp.name='q_current'; // 固定 name，避免 checked 状态残留
+    inp.value=v;
+
+    const circle=document.createElement('div');
+    circle.className='soc';
+    circle.textContent=v;
+
+    const sol=document.createElement('div');
+    sol.className='sol';
+    sol.textContent=LBLS[i];
+
+    // 若已答过则高亮显示（纯视觉，不触发 change）
+    if(answers[q.id]===v){
+      circle.style.borderColor='var(--accent)';
+      circle.style.background='var(--accent)';
+      circle.style.color='#fff';
+      circle.style.transform='scale(1.1)';
+      circle.style.boxShadow='0 6px 18px rgba(181,131,106,.38)';
+    }
+
+    // 点击整个 label 时执行答题（不依赖 radio change）
+    lbl.addEventListener('click', function(){
+      if(inp.dataset.clicked) return; // 防止双触发
+      inp.dataset.clicked='1';
+      onAnswer(q.id, v);
+    });
+
+    lbl.appendChild(inp);
+    lbl.appendChild(circle);
+    lbl.appendChild(sol);
+    wrap.appendChild(lbl);
+  });
+
+  // card re-animation
+  const card=document.getElementById('q-card');
+  card.style.animation='none';void card.offsetWidth;card.style.animation='';
+
+  // 上一题按钮
+  document.getElementById('btn-prev').style.display=cur>0?'block':'none';
+
+  // 提交按钮：只在最后一题且全部答完时显示
+  const allDone=Object.keys(answers).length===90;
+  const isLast=cur===89;
+  document.getElementById('btn-sub').style.display=(isLast&&allDone)?'block':'none';
+  document.getElementById('q-hint').textContent=
+    (isLast&&allDone)?'✓ 全部完成，点击上方按钮查看报告':'点击选项后自动跳至下一题';
+}
+
+// 防止同一题重复触发跳转
+let jumping=false;
+
+function onAnswer(qId,score){
+  if(jumping) return;
+  answers[qId]=score;
+
+  // 第90题：显示提交按钮，不自动跳转
+  if(cur===89){
+    const allDone=Object.keys(answers).length===90;
+    if(allDone){
+      document.getElementById('btn-sub').style.display='block';
+      document.getElementById('q-hint').textContent='✓ 全部完成，点击上方按钮查看报告';
+    }
+    return;
+  }
+
+  // 其他题：自动跳下一题
+  jumping=true;
+  setTimeout(function(){
+    cur++;
+    jumping=false;
+    renderQ();
+  },260);
+}
+
+function prevQ(){
+  if(cur>0&&!jumping){cur--;renderQ();}
+}
+
+function submitTest(){
+  const ua=QS.filter(q=>!answers[q.id]);
+  if(ua.length>0){
+    alert(`还有 ${ua.length} 道题未作答。\n将跳转至第 ${ua[0].id} 题，请完成后再提交。`);
+    cur=QS.findIndex(q=>q.id===ua[0].id);renderQ();return;
+  }
+  buildResult();go('pg-result');
+}
+
+// ── SCORING ──
+function compute(){
+  const total=QS.reduce((s,q)=>s+answers[q.id],0);
+  const gsi=+(total/90).toFixed(2);
+  const pst=QS.filter(q=>answers[q.id]>1).length;
+  const psums=QS.filter(q=>answers[q.id]>1).reduce((s,q)=>s+answers[q.id],0);
+  const psdi=pst>0?+(psums/pst).toFixed(2):0;
+  const dims=DIMS.map(d=>{
+    const sum=d.qs.reduce((s,id)=>s+answers[id],0);
+    const avg=+(sum/d.qs.length).toFixed(2);
+    return{...d,sum,avg,lvl:getLvl(avg)};
+  });
+  return{total,gsi,pst,psdi,dims};
+}
+
+function getLvl(avg){
+  if(avg<1.5)return{label:'正常',bar:'bn',lv:'lvn',cls:'la'};
+  if(avg<2.0)return{label:'轻度',bar:'bm',lv:'lvm',cls:'lb'};
+  if(avg<3.0)return{label:'中度',bar:'bmo',lv:'lvmo',cls:'lc'};
+  return         {label:'重度',bar:'bs',lv:'lvs',cls:'ld'};
+}
+function getOv(gsi){
+  if(gsi<1.5)return{label:'心理状态良好 🌱',cls:'la',sgcls:'sga',sgkey:'sga'};
+  if(gsi<2.0)return{label:'轻度心理困扰 🌤️',cls:'lb',sgcls:'sgb',sgkey:'sgb'};
+  if(gsi<2.5)return{label:'中度心理困扰 ⚡',cls:'lc',sgcls:'sgc',sgkey:'sgc'};
+  return         {label:'重度心理困扰 🌩️',cls:'ld',sgcls:'sgd',sgkey:'sgd'};
+}
+
+// ── DIM INFO ──
+const DI={
+  som:{
+    what:'躯体化因子反映个体将心理压力"转化"为身体不适症状的倾向，涵盖头痛、眩晕、心血管不适（胸痛、心跳加速）、消化道反应（恶心、胃部不适）、肌肉疼痛及其他躯体感觉异常等。值得注意的是，这类症状在医学检查中往往找不到器质性病变，本质上是心理紧张或情感压力的躯体表达方式，又称为"心身反应"。',
+    high:'您在躯体化维度得分偏高，提示近期身体的某些不适感可能与心理压力密切相关。当情绪能量无法通过心理途径充分释放时，身体往往成为"替代出口"——这是一种极为常见的心身转化现象。建议在关注这些身体症状的同时，重点评估近期的情绪状态与生活压力，因为单纯的躯体治疗往往难以根本解决问题。',
+    norm:'躯体化维度得分处于正常范围，说明您目前心身状态相对平衡，没有明显将情绪压力转化为躯体不适的表现。'
+  },
+  ocd:{
+    what:'强迫因子衡量个体反复出现、难以通过主观意志控制的想法、冲动或重复行为的程度。包括：思维反刍（脑子里某些词句或想法反复出现）、强迫性检查（反复确认门锁、煤气等）、过度追求秩序与完美、以及明知没有必要却无法停止的行为模式（如反复洗手、数数）。当事人往往非常清楚这些行为"不合理"，却无法有效控制。',
+    high:'您在强迫维度得分偏高，提示可能存在一定程度的强迫性思维或行为模式，这类体验往往令人感到内耗和疲惫。强迫症状与焦虑水平高度相关，大脑在焦虑状态下会持续"反复确认"，以试图获得安全感。识别这一模式是改变的第一步；如果强迫症状明显影响了日常生活效率和情绪，建议考虑专业的认知行为治疗（CBT）或正念训练。',
+    norm:'强迫维度得分正常，说明您在认知控制与行为灵活性方面表现良好，没有明显的强迫性思维或重复行为困扰。'
+  },
+  int:{
+    what:'人际关系敏感因子（亦称"敏感性"因子）反映个体在与他人交往中的不自在感、自卑感，以及对来自他人评价的过度敏感程度。高分者在社交互动中容易体验到自我意识过强、担心被批评或被拒绝的感受，自我价值感的稳定性较低，并常将他人行为解读为对自己的否定或轻视。',
+    high:'您在人际关系敏感维度得分偏高，说明近期在社交互动中可能承受着较大的心理压力。这种对他人眼光的高度敏感，通常根植于早年形成的自我认知模式——例如对"被否定"的深度恐惧，或对自身价值的内在怀疑。重要的是认识到：他人对您的评价，远没有您以为的那么频繁和严苛。',
+    norm:'人际关系敏感维度得分正常，说明您在人际互动中总体自如，自我评价相对稳定，没有明显的社交焦虑或自卑感困扰。'
+  },
+  dep:{
+    what:'抑郁因子综合反映典型抑郁症状群，涵盖：情绪低落与苦闷、对原本感兴趣事物的兴趣丧失、精力下降与活动迟缓、反复自责与自我否定、对未来感到无望、哭泣倾向，以及对死亡或自杀的思虑。这是临床心理评估中最受关注的核心维度之一，也是SCL-90中题目数最多的因子（共13题），反映了其在心理健康筛查中的重要性。',
+    high:'您在抑郁维度得分偏高，提示近期可能存在较明显的情绪低落体验。抑郁情绪是人类面对压力、丧失或长期挫败的正常反应，但当这种状态持续时间较长（通常以两周为界限）、程度较重，且影响到日常生活功能时，就需要认真对待。请注意：抑郁是一种可治疗的心理状态，主动寻求支持是有效且重要的选择。',
+    norm:'抑郁维度得分处于正常范围，说明您目前情绪状态相对稳定，没有明显的持续低落、无望感或自我否定体验。'
+  },
+  anx:{
+    what:'焦虑因子衡量个体持续的紧张不安、惊恐体验以及各类躯体性焦虑症状（如无缘由的心跳加速、发抖、呼吸困难等自主神经反应）。焦虑本质上是大脑对"潜在威胁"的过度预警反应，是进化保留下来的生存机制；当这种反应被泛化、与实际威胁不成比例时，便转化为令人痛苦的焦虑状态。',
+    high:'您在焦虑维度得分偏高，说明近期可能处于持续的紧张与担忧状态。焦虑的核心特征是"对尚未发生的事情的持续担忧"，大脑会不断模拟负面场景、寻找潜在风险。短期的高度警觉可以调动资源，但长期焦虑会显著消耗身心储备，并可能引发躯体化症状。识别焦虑触发点，是管理焦虑的重要第一步。',
+    norm:'焦虑维度得分正常，说明您目前整体处于平稳状态，没有明显的持续紧张、惊恐发作或过度担忧的困扰。'
+  },
+  hos:{
+    what:'敌对因子反映个体的愤怒情绪体验、易激惹倾向，以及攻击性的思维与行为表达，包括言语攻击（争论、大叫）和行为冲动（砸东西、伤害冲动等）。敌对情绪往往是长期积累的压力、被压抑的需求、感知到的不公平对待或习得的应对模式的综合体现，并非单纯的"脾气不好"。',
+    high:'您在敌对维度得分偏高，提示近期可能存在较强的愤怒情绪或攻击冲动。值得思考的是：愤怒常常是"次级情绪"，其背后往往隐藏着受伤、委屈、无力或恐惧等更深层的感受。识别愤怒背后的真实情绪，并找到更健康的表达出口，是情绪管理的核心功课。',
+    norm:'敌对维度得分正常，说明您在情绪管理和冲突应对方面表现良好，没有明显的易激惹或攻击性冲动困扰。'
+  },
+  pho:{
+    what:'恐怖因子（在某些版本中亦称"恐惧"因子）评估个体对特定场合、情境或物体的持续、不合理的恐惧，以及由此产生的主动回避行为。主要涵盖：场所恐惧（害怕空旷场所、公共交通、人群密集处、单独外出等）和社交场合中的恐惧（害怕在公开场合进食、害怕昏倒等）。',
+    high:'您在恐怖维度得分偏高，说明可能存在对某些特定情境或场合的明显恐惧与回避。恐惧情绪本身是保护性的，但当它对实际风险的评估严重失真、导致大范围回避行为时，便会显著限制生活范围和自由度。暴露疗法（逐步面对所恐惧的情境）是目前对这类问题效果最为显著的干预方式。',
+    norm:'恐怖维度得分正常，说明您没有明显的特定场所或情境恐惧，日常出行与社交活动未受显著影响。'
+  },
+  par:{
+    what:'偏执因子衡量个体的投射性思维（将自身的负面特质归咎于他人）、猜疑倾向、敌意归因（将他人中性行为解读为恶意），以及对公平与权威的过度敏感。高分者通常对他人动机持广泛怀疑态度，难以建立信任关系，并倾向于在关系中感到被针对或被利用。',
+    high:'您在偏执维度得分偏高，提示近期可能对他人的意图或行为存在较多疑虑，较容易感到被针对或不被公平对待。适度的警觉是自我保护的本能，但当这种模式过于广泛时，会显著损害人际信任、加剧孤立感。探索这种信任困难的根源，是改善人际关系质量的重要路径。',
+    norm:'偏执维度得分正常，说明您在人际归因方面较为客观，没有明显的猜疑倾向或过度的被迫害感。'
+  },
+  psy:{
+    what:'精神病性因子涵盖精神病性症状谱系，包括：思维被插入（感到思想被他人植入或控制）、思维广播（感到自己的想法被他人知晓）、幻听（听到他人无法听到的声音）、关系妄想（感到他人在议论或监视自己）、以及其他奇特或不寻常的思维体验。需要特别说明：在一般人群中，此因子低至中等得分更多反映了思维的独特性、内省倾向，以及极度压力或严重睡眠剥夺下的一过性体验，而非直接等同于临床精神病性诊断。',
+    high:'您在精神病性维度得分偏高，提示可能存在一些不寻常的思维或感知体验。这些体验可能令您感到困惑或不安。需要说明的是，单纯的量表结果不能作为诊断依据，但这些体验值得认真对待。强烈建议在合适的时机与心理健康专业人士进行一次面对面的评估，以获得更清晰的了解与必要的支持。',
+    norm:'精神病性维度得分正常，说明您在思维清晰度和现实检验能力方面表现良好，没有明显的感知觉异常或奇特思维体验。'
+  }
+};
+
+const SG={
+  sga:{head:'继续保持，主动培养心理健康储备',items:[
+    '您本次测评结果整体良好，这是积极的信号。建议将心理健康纳入日常维护意识，就像关注身体健康一样。',
+    '保持规律的睡眠节律（7–8小时/晚）、适度有氧运动（每周至少150分钟），是心理健康最重要的生理基础。',
+    '维系深度、真实的社交关系，定期与亲近的人进行坦诚的情感交流，是面对未来压力的核心缓冲。',
+    '可以尝试建立情绪觉察习惯：每天花5分钟记录当天的情绪状态，有助于早期发现内在变化。',
+    '推荐每3–6个月进行一次SCL-90或其他心理健康自评，持续追踪自身心理状态变化趋势。'
+  ]},
+  sgb:{head:'温和调整，关注压力与情绪的平衡',items:[
+    '您目前的测评结果显示存在一定程度的心理困扰——这是非常常见的状态，说明您的内心正在发送信号，值得认真聆听。',
+    '建议梳理近期主要的压力来源，区分哪些可以通过行动改变、哪些需要调整认知与期待。"做自己能做的事，接受不能改变的事"是减少内耗的核心原则。',
+    '每天练习10分钟腹式深呼吸或渐进式肌肉放松，有助于降低自主神经的过度激活状态。',
+    '有意识地减少无效信息输入（频繁刷社交媒体、负面新闻），保护自己的注意力与心理空间。',
+    '如果当前困扰状态持续超过两周，建议预约一次专业心理咨询进行系统评估，早干预效果更佳。'
+  ]},
+  sgc:{head:'认真对待，主动寻求专业支持',items:[
+    '您本次测评结果显示存在中等程度的心理困扰，建议将"寻求支持"作为当下优先处理的事项，而不是拖延到"更严重的时候"。',
+    '尝试建立每日情绪日记习惯：记录当天的触发事件、情绪体验与身体感受，有助于觉察情绪模式，也是心理咨询的重要素材。',
+    '主动将内心的困扰说出来，与信任的人分享——人类的大脑在被他人真正听到时，会产生实质性的情绪缓解效应。',
+    '建议尽快预约专业心理咨询（认知行为疗法CBT对抑郁、焦虑、强迫等多类困扰均有充分的循证支持），不要等到"撑不住"再寻求帮助。',
+    '特别提醒：避免以过度饮食、饮酒、过度消费或沉浸式游戏来回避情绪体验——这类行为短期减压，长期会加重困扰并形成依赖。'
+  ]},
+  sgd:{head:'请认真对待，尽快寻求专业帮助',items:[
+    '您本次测评结果显示存在明显的心理困扰，这个信号需要被认真对待。您值得获得专业的支持与帮助。',
+    '强烈建议尽快前往医院心理科或精神科进行面诊评估——专业医生的综合判断比任何自评工具都更准确、更有价值。',
+    '如果您有自伤、自杀或伤害他人的想法，请立即告知身边信任的人，并联系心理援助热线：北京 010-82951332 / 全国 400-161-9995。',
+    '在专业支持到来之前：确保基本的规律饮食与睡眠，每天至少有一次与外界的真实连接（面对面或通话），避免长时间独处并沉浸在负面思维中。',
+    '请记住：心理困扰和躯体疾病一样需要、也值得被治疗。寻求帮助不是软弱，而是对自己生命的负责。'
+  ]}
+};
+
+// ── BUILD RESULT ──
+function buildResult(){
+  const sc=compute();
+  const ov=getOv(sc.gsi);
+
+  document.getElementById('r-total').textContent=sc.total;
+  document.getElementById('r-gsi').textContent=sc.gsi;
+  document.getElementById('r-pst').textContent=sc.pst;
+  document.getElementById('r-psdi').textContent=sc.psdi;
+  const b=document.getElementById('r-lvl');
+  b.textContent=ov.label;b.className='rlvl '+ov.cls;
+
+  // Ring
+  const circ=2*Math.PI*52;
+  setTimeout(()=>{
+    const pct=Math.min(sc.total/450,1);
+    const el=document.getElementById('ring-fill');
+    el.style.strokeDasharray=circ;
+    el.style.strokeDashoffset=circ*(1-pct);
+  },300);
+
+  // Core text
+  const coreRef=sc.total<130?'低于国内常模均值（129.96分），处于正常参考范围':
+    sc.total<200?'高于国内常模均值（129.96分），提示存在一定程度的心理困扰':
+    '明显高于国内常模，提示心理困扰较为明显';
+  document.getElementById('r-core').innerHTML=
+    `<strong>① 总分（Total Score）：${sc.total} 分</strong>（满分450分）<br>
+    SCL-90 国内成人常模总分均值约为 <strong>129.96 分</strong>（标准差38.76）。您的总分${coreRef}。<br><br>
+    <strong>② 总均分（GSI，Global Severity Index）：${sc.gsi}</strong><br>
+    为所有90题得分之和除以90，反映您整体的心理健康水平。国内常模均分约为 <strong>1.44</strong>。通常认为：GSI &lt; 1.5 属于状态良好区间；1.5–2.0 为轻度困扰区间；2.0–2.5 为中度困扰；&gt; 2.5 提示明显困扰，建议专业评估。<br><br>
+    <strong>③ 阳性症状项目数（PST，Positive Symptom Total）：${sc.pst} 项</strong><br>
+    即所有评分 ≥ 2分 的题目数量，代表您实际感受到困扰的症状条目数。国内常模约为 <strong>24.92 项</strong>。数值越高，说明存在困扰的症状范围越广泛。<br><br>
+    <strong>④ 阳性症状均分（PSDI，Positive Symptom Distress Index）：${sc.psdi}</strong><br>
+    仅针对有实际困扰（评分≥2）的项目计算平均严重程度。此数值越高，说明"已有困扰的症状"其强度越大，与PST共同描绘了心理困扰的范围与深度。`;
+
+  const needAttn=sc.dims.filter(d=>d.avg>=2.0);
+  const topD=[...sc.dims].sort((a,b)=>b.avg-a.avg)[0];
+  document.getElementById('r-overall').innerHTML=
+    `本次测评综合评估结果显示，您的总均分为 <strong>${sc.gsi}</strong>，整体${
+      sc.gsi<1.5?'处于良好状态，各维度得分均在合理范围内':
+      sc.gsi<2.0?'存在轻度心理困扰，建议适当关注自身状态':
+      sc.gsi<2.5?'存在中等程度心理困扰，建议积极寻求支持':
+      '存在较为明显的心理困扰，建议尽快寻求专业帮助'}。<br><br>
+    ${needAttn.length===0?
+      '令人欣慰的是，所有9个维度的均分均低于2.0，说明目前没有任何一个维度出现需要重点干预的明显困扰，心理状态整体较为均衡。':
+      `在9个维度中，<strong>${needAttn.map(d=>d.name).join('、')}</strong>（共${needAttn.length}个维度）的均分达到或超过2.0，提示这些方面是您当前最需要关注的心理领域。`}
+    ${topD.avg>=2.0?`<br><br>得分最高的维度为 <strong>${topD.name}</strong>（均分${topD.avg}），建议展开该维度的详细解读，了解其含义及对您的个性化分析。`:''}`;
+
+  // Score overview
+  const sovEl=document.getElementById('sov');
+  sovEl.innerHTML='';
+  sc.dims.forEach((d,i)=>{
+    const pct=Math.min((d.avg-1)/4*100,100);
+    const r=document.createElement('div');
+    r.className='sovr';
+    r.innerHTML=`<div class="sovn">${d.name}</div>
+      <div class="sovbw"><div class="sovb ${d.lvl.bar}" id="sovb-${i}"></div></div>
+      <div class="sovs">${d.avg}</div>
+      <div class="sovlv ${d.lvl.lv}">${d.lvl.label}</div>`;
+    sovEl.appendChild(r);
+    setTimeout(()=>{document.getElementById(`sovb-${i}`).style.width=pct+'%';},350+i*60);
+  });
+
+  // Dim detail cards
+  const dc=document.getElementById('dcards');
+  dc.innerHTML='';
+  sc.dims.forEach((d,i)=>{
+    const info=DI[d.key];
+    const interp=d.avg>=2.0?info.high:info.norm;
+    const pct=Math.min((d.avg-1)/4*100,100);
+    const card=document.createElement('div');
+    card.className='dcard';
+    card.innerHTML=`
+      <div class="dch" onclick="toggleD(this,${i},${pct})">
+        <div class="dchl">
+          <div class="dchn">${d.name}</div>
+          <div class="dchm">
+            <div class="dcha">${d.avg}</div>
+            <div class="dcho">/ 5.00</div>
+            <div class="dchb ${d.lvl.lv}">${d.lvl.label}</div>
+          </div>
+        </div>
+        <div class="dcarr">∨</div>
+      </div>
+      <div class="dcb" id="dcb-${i}">
+        <div class="dcbw"><div class="dcbb ${d.lvl.bar}" id="dcbb-${i}" style="width:0%"></div></div>
+        <div class="dtt">📌 维度说明</div>
+        <div class="dtd">${info.what}</div>
+        <div class="dtt">📊 您的得分解读</div>
+        <div class="dti">${interp}</div>
+      </div>`;
+    dc.appendChild(card);
+  });
+
+  // Focus & strength
+  const sorted=[...sc.dims].sort((a,b)=>b.avg-a.avg);
+  const focus=sorted.filter(d=>d.avg>=2.0);
+  const strength=sorted.filter(d=>d.avg<1.5).reverse();
+
+  if(focus.length===0){
+    document.getElementById('r-focus').textContent='本次测评中，您所有9个维度的均分均低于2.0，没有出现明显需要重点干预的困扰领域——这是一个积极的信号，说明您当前心理状态相对均衡健康。';
+  } else {
+    document.getElementById('r-focus').innerHTML=focus.map(d=>
+      `<strong>${d.name}（均分${d.avg} / ${d.lvl.label}）</strong><br>${DI[d.key].high}`
+    ).join('<br><br>');
+  }
+
+  if(strength.length===0){
+    document.getElementById('r-strength').textContent='在本次测评中，各维度得分相对集中，尚未呈现出显著突出的低分优势维度。建议通过持续的心理保健习惯，逐步构建更为稳固的心理资源储备。';
+  } else {
+    document.getElementById('r-strength').innerHTML=
+      '以下维度得分处于良好状态（均分<1.5），反映您在这些方面具有相对充裕的心理资源，是您的内在优势所在：<br><br>'+
+      strength.map(d=>`<strong>${d.name}（均分${d.avg}）：</strong>${DI[d.key].norm}`).join('<br><br>');
+  }
+
+  // Suggestions
+  const sgData=SG[ov.sgkey];
+  const sgcard=document.getElementById('sgcard');
+  sgcard.className='sgcard '+ov.sgcls;
+  document.getElementById('sg-h').textContent=sgData.head;
+  document.getElementById('sg-is').innerHTML=sgData.items.map(s=>
+    `<div class="sgit"><div class="sgdot"></div><div>${s}</div></div>`
+  ).join('');
+}
+
+function toggleD(head,i,pct){
+  head.classList.toggle('open');
+  const b=document.getElementById(`dcb-${i}`);
+  b.classList.toggle('open');
+  if(b.classList.contains('open')){
+    const bar=document.getElementById(`dcbb-${i}`);
+    bar.style.width='0%';
+    setTimeout(()=>{bar.style.width=pct+'%';},50);
+  }
+}
+
+window.onload=function(){checkToken();};
+</script>
+</body>
+</html>
